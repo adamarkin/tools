@@ -1,4 +1,7 @@
 $Host.UI.RawUI.WindowTitle='dev'; Clear-Host
+Add-Type -Namespace Win32 -Name Power -MemberDefinition '[DllImport("kernel32.dll")] public static extern uint SetThreadExecutionState(uint f);'
+# ES_CONTINUOUS|ES_SYSTEM_REQUIRED|ES_DISPLAY_REQUIRED (0x80000003): keep PC and screen awake while running
+[void][Win32.Power]::SetThreadExecutionState(2147483651)
 $code = @(
 'import os, json, logging',
 'from dataclasses import dataclass',
@@ -60,4 +63,4 @@ try {
     }
     Start-Sleep -Milliseconds 800
   }
-} finally { [Console]::ResetColor() }
+} finally { [void][Win32.Power]::SetThreadExecutionState(2147483648); [Console]::ResetColor() }
